@@ -22,9 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#if defined(NUMA)
 #include <numa.h>
-#endif
 
 // Local includes
 #include "chain.h"
@@ -490,10 +488,8 @@ int Experiment::parse_args(int argc, char* argv[]) {
 		break;
 	}
 
-#if defined(NUMA)
 	this->numa_max_domain = numa_max_node();
 	this->num_numa_domains = this->numa_max_domain + 1;
-#endif
 
 	switch (this->numa_placement) {
 	case LOCAL:

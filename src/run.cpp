@@ -23,9 +23,7 @@
 #include <unistd.h>
 #include <cstddef>
 #include <algorithm>
-#if defined(NUMA)
 #include <numa.h>
-#endif
 
 // Local includes
 #include <AsmJit/AsmJit.h>
@@ -67,7 +65,6 @@ int Run::run() {
 	Chain** chain_memory = new Chain*[this->exp->chains_per_thread];
 	Chain** root = new Chain*[this->exp->chains_per_thread];
 
-#if defined(NUMA)
 	// establish the node id where this thread
 	// will run. threads are mapped to nodes
 	// by the set-up code for Experiment.
@@ -86,11 +83,6 @@ int Run::run() {
 
 		chain_memory[i] = new Chain[ this->exp->links_per_chain ];
 	}
-#else
-	for (int i = 0; i < this->exp->chains_per_thread; i++) {
-		chain_memory[i] = new Chain[this->exp->links_per_chain];
-	}
-#endif
 
 	// initialize the chains and
 	// select the function that
