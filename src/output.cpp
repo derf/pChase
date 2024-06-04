@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <numa.h>
 
 //
 // Implementation
@@ -37,10 +38,15 @@ void Output::print(Experiment &e, int64 ops, std::vector<double> seconds, double
 		Output::header(e, ops, ck_res);
 		for (int i = 0; i < seconds.size(); i++)
 			Output::csv(e, ops, seconds[i], ck_res);
+	} else if (e.output_mode == Experiment::DFATOOL) {
+		for (int i = 0; i < seconds.size(); i++) {
+			Output::dfatool(e, ops, seconds[i], ck_res);
+		}
 	} else {
 		long double averaged_seconds = 0;
-		for (int i = 0; i < seconds.size(); i++)
+		for (int i = 0; i < seconds.size(); i++) {
 			averaged_seconds += seconds[i];
+		}
 		Output::table(e, ops, (double) (averaged_seconds/seconds.size()), ck_res);
 	}
 }
@@ -115,6 +121,18 @@ void Output::csv(Experiment &e, int64 ops, double secs, double ck_res) {
     printf("%.2f,", (secs / (ops * e.iterations)) * 1E9);
     printf("%.3f\n", ((ops * e.iterations * e.chains_per_thread * e.num_threads * e.bytes_per_line) / secs) * 1E-6);
 
+    fflush(stdout);
+}
+
+void Output::dfatool(Experiment &e, int64 ops, double secs, double ck_res) {
+    printf("[::] pChase | pointer_B=%ld cacheline_B=%ld page_B=%ld chain_B=%ld thread_B=%ld test_B=%ld e_pattern=%s stride=%d cpu_numa_node=%d ram_numa_node=%d numa_distance_cpu_ram=%d",
+        e.pointer_size, e.bytes_per_line, e.bytes_per_page, e.bytes_per_chain, e.bytes_per_thread, e.bytes_per_test,
+        e.access(), e.stride, e.thread_domain[0], e.chain_domain[0][0], numa_distance(e.thread_domain[0], e.chain_domain[0][0])
+    );
+    printf(" | latency_ns=%.2f bandwidth_MBps=%.3f\n",
+        (secs / (ops * e.iterations)) * 1e9,
+        ((ops * e.iterations * e.chains_per_thread * e.num_threads * e.bytes_per_line) / secs) * 1e-6
+    );
     fflush(stdout);
 }
 

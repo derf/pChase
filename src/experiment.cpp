@@ -319,6 +319,8 @@ int Experiment::parse_args(int argc, char* argv[]) {
 				this->output_mode = HEADER;
 			} else if (strcasecmp(argv[i], "header") == 0) {
 				this->output_mode = HEADER;
+			} else if (strcasecmp(argv[i], "dfatool") == 0) {
+				this->output_mode = DFATOOL;
 			} else {
 				snprintf(errorString, errorStringSize, "invalid output format -- '%s'", argv[i]);
 				error = true;

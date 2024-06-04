@@ -36,6 +36,7 @@ public:
 	static void header(Experiment &e, int64 ops, double ck_res);
 	static void csv(Experiment &e, int64 ops, double seconds, double ck_res);
 	static void table(Experiment &e, int64 ops, double seconds, double ck_res);
+	static void dfatool(Experiment &e, int64 ops, double seconds, double ck_res);
 private:
 };
 
