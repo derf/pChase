@@ -78,10 +78,11 @@ int Run::run() {
 	// memory will be allocated.
 	for (int i=0; i < this->exp->chains_per_thread; i++) {
 		int alloc_node_id = this->exp->chain_domain[this->thread_id()][i];
-		nodemask_t alloc_mask;
-		nodemask_zero(&alloc_mask);
-		nodemask_set(&alloc_mask, alloc_node_id);
-		numa_set_membind(&alloc_mask);
+		struct bitmask *bitmask = numa_allocate_nodemask();
+		numa_bitmask_clearall(bitmask);
+		numa_bitmask_setbit(bitmask, alloc_node_id);
+		numa_set_membind(bitmask);
+		numa_free_nodemask(bitmask);
 
 		chain_memory[i] = new Chain[ this->exp->links_per_chain ];
 	}
