@@ -366,7 +366,7 @@ static benchmark chase_pointers(int64 chains_per_thread, // memory loading per t
 	std::vector<AsmJit::GPVar> heads(chains_per_thread);
 	for (int i = 0; i < chains_per_thread; i++) {
 		AsmJit::GPVar head = c.newGP();
-		c.mov(head, ptr(chain));
+		c.mov(head, ptr( chain, i * sizeof( Chain * ) ) );
 		heads[i] = head;
 	}
 
@@ -374,7 +374,7 @@ static benchmark chase_pointers(int64 chains_per_thread, // memory loading per t
 	std::vector<AsmJit::GPVar> positions(chains_per_thread);
 	for (int i = 0; i < chains_per_thread; i++) {
 		AsmJit::GPVar position = c.newGP();
-		c.mov(position, heads[0]);
+		c.mov(position, heads[i]);
 		positions[i] = position;
 	}
 
